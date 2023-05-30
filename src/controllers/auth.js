@@ -1,5 +1,5 @@
-import User from "../models/user.js";
-import { signinSchema, signupSchema } from '../validation/user.js';
+import User from "../models/user";
+import { signinSchema, signupSchema } from '../validation/user';
 import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken';
 
@@ -33,5 +33,41 @@ export const signUp = async (req, res) => {
         return res.status(500).json({
             message: "lỗi server"
         })
+    }
+}
+
+export const signIn = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const { error } = signinSchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({
+                message: error.details[0].message,
+                datas: []
+            })
+        }
+        const checkEmail = await User.findOne({ email })
+        if (!checkEmail) {
+            return res.status(400).json({
+                message: "Email không tồn tại"
+            })
+        }
+        const checkPass = await bcryptjs.compare(password, checkEmail.password);
+        if (!checkPass) {
+            return res.status(400).json({
+                message:"Mật khẩu không chính xác"
+            })
+        }
+
+        const token = jwt.sign({
+            id: checkEmail.id
+        }, "svfpoly", { expiresIn: '1d' })
+        checkEmail.password = undefined
+        return res.status(200).json({
+            message: "Đăng nhập thành công",
+            datas: { ...checkEmail._doc, accessToken: token }
+        })
+    } catch (error) {
+
     }
 }
