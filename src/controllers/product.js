@@ -77,3 +77,30 @@ export const remove = async (req, res) => {
     }
   };
 
+
+  export const update = async (req, res) => {
+    try {
+      const { error } = productSchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({
+                message: error.details[0].message
+            })
+        }
+      const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+      if (!product) {
+        return res.status(404).json({
+          message: "Không tìm thấy sản phẩm",
+        });
+      }
+      return res.status(200).json({
+        message: "Sản phẩm đã được cập nhật thành công",
+        data: product,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error,
+      });
+    }
+  };
