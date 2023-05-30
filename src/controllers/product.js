@@ -1,5 +1,5 @@
-import Product from '../models/product'
-import productSchema from '../validation/product';
+import Product from '../models/product.js'
+import productSchema from '../validation/product.js';
 
 export const getAll = async (req, res) => {
     try {
@@ -62,4 +62,18 @@ export const create = async (req, res) => {
         })
     }
 }
+
+export const remove = async (req, res) => {
+    try {
+      const product = await Product.findByIdAndDelete(req.params.id);
+      return res.status(200).json({
+        message: "Sản phẩm đã được xóa thành công",
+        product,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error,
+      });
+    }
+  };
 
