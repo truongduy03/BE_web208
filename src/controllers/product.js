@@ -80,6 +80,12 @@ export const remove = async (req, res) => {
 
   export const update = async (req, res) => {
     try {
+      const { error } = productSchema.validate(req.body)
+        if (error) {
+            return res.status(400).json({
+                message: error.details[0].message
+            })
+        }
       const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       });
