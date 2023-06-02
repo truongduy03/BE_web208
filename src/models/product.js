@@ -15,7 +15,11 @@ const productSchema = new mongoose.Schema({
     },
     description: {
         type: String
+    },
+    categoryId: {
+        type: mongoose.Types.ObjectId,
+        ref:"Category"
     }
 }, { timestamps: true, versionKey: false })
 
-export default mongoose.model("Product",productSchema)
+export default mongoose.model("Product", productSchema)

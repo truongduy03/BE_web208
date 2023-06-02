@@ -1,5 +1,6 @@
 import Category from "../models/category.js";
 import categorySchema from "../validation/category.js";
+import Product from "../models/product.js";
 
 export const getAll = async (req, res) => {
   try {
@@ -12,7 +13,7 @@ export const getAll = async (req, res) => {
     }
     return res.status(200).json({
       message: "Lấy danh sách thành công",
-      datas: [...categories],
+      datas: categories,
     });
   } catch (error) {
     return res.status(400).json({
@@ -98,6 +99,8 @@ export const updatePatch = async function (req, res) {
 };
 export const remove = async function (req, res) {
   try {
+    const categoryId = req.params.id
+    await Product.deleteMany({categoryId})
     const category = await Category.findByIdAndDelete(req.params.id);
     return res.json({
       message: "Xóa category thành công",
