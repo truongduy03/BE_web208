@@ -2,6 +2,11 @@ import User from "../models/user";
 import { signinSchema, signupSchema } from '../validation/user';
 import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+dotenv.config();
+
+const SECRET_CODE = "svfpoly";
+
 
 export const signUp = async (req, res) => {
     try {
@@ -46,28 +51,31 @@ export const signIn = async (req, res) => {
                 datas: []
             })
         }
-        const checkEmail = await User.findOne({ email })
-        if (!checkEmail) {
+        const haveUser = await User.findOne({ email })
+        if (!haveUser) {
             return res.status(400).json({
                 message: "Email không tồn tại"
             })
         }
-        const checkPass = await bcryptjs.compare(password, checkEmail.password);
+        const checkPass = await bcryptjs.compare(password, haveUser.password);
         if (!checkPass) {
             return res.status(400).json({
-                message:"Mật khẩu không chính xác"
+                message: "Mật khẩu không chính xác"
             })
         }
 
         const token = jwt.sign({
-            id: checkEmail.id
-        }, "svfpoly", { expiresIn: '1d' })
-        checkEmail.password = undefined
+            id: haveUser.id
+        }, SECRET_CODE, { expiresIn: '1d' })
+        haveUser.password = undefined
         return res.status(200).json({
             message: "Đăng nhập thành công",
-            datas: { ...checkEmail._doc, accessToken: token }
+            accessToken: token,
+            user: haveUser,
         })
     } catch (error) {
-
+        return res.status(500).json({
+            message: "Lỗi server",
+          });
     }
 }
