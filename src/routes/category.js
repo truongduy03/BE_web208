@@ -5,9 +5,9 @@ import { getAll, get, create, updatePatch, remove } from "../controllers/categor
 const routerCategory = express.Router();
 
 routerCategory.get("/", getAll); 
-routerCategory.get("/:id", get); 
+routerCategory.get("/:_id", get); 
 routerCategory.post("/", create); 
-routerCategory.patch("/:id", updatePatch); 
-routerCategory.delete("/:id", remove); 
+routerCategory.put("/:_id", updatePatch); // -> patch
+routerCategory.delete("/:_id", remove); 
 
 export default routerCategory;
